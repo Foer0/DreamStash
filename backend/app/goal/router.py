@@ -8,10 +8,10 @@ from app.goal import services
 
 UPLOAD_DIR = "backend"
 
-router = APIRouter()
+router = APIRouter(prefix="/goals", tags=["Goals"])
 
 
-@router.get("/goals", response_model=list[GoalWithRaisedResponse])
+@router.get("/", response_model=list[GoalWithRaisedResponse])
 def display_goals(
         db: Annotated[Session, Depends(get_db)],
         cur_user_id: Annotated[int, Depends(get_current_user_id)]
@@ -27,7 +27,7 @@ def display_goals(
 
 
 
-@router.post("/goals", response_model=GoalWithRaisedResponse)
+@router.post("/", response_model=GoalWithRaisedResponse)
 def create_goal(
         goal_data: Annotated[GoalCreateForm, Form()],
         img: Annotated[UploadFile | None, File()],
@@ -44,7 +44,7 @@ def create_goal(
     return GoalWithRaisedResponse.model_validate(new_goal_out)
 
 
-@router.patch("/goals/{goal_id}", response_model=GoalResponse)
+@router.patch("/{goal_id}", response_model=GoalResponse)
 def update_goal(
         goal_id: int,
         db: Annotated[Session, Depends(get_db)],
@@ -59,7 +59,7 @@ def update_goal(
     return GoalResponse.model_validate(upd_goal)
 
 
-@router.delete("goals/{goal_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{goal_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_goal(
         goal_id: int,
         db: Annotated[Session, Depends(get_db)],
