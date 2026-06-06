@@ -18,7 +18,7 @@ class GoalLog(Base):
     goal_id: Mapped[int] = mapped_column(Integer, ForeignKey('goals.id', ondelete='CASCADE'))
     amount: Mapped[Decimal] = mapped_column(Numeric(11, 2))
     currency: Mapped[Currency] = mapped_column(CHAR(3))
-    type: Mapped[str] = mapped_column(CHAR(8))
+    operation_type: Mapped[str] = mapped_column(CHAR(8), name="type")
     created_at: Mapped[date] = mapped_column(Date, server_default=text('CURRENT_DATE'))
     note: Mapped[str | None] = mapped_column(Text)
 

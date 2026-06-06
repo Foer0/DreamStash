@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, field_validator, HttpUrl, ConfigDict, model_validator
 from decimal import Decimal
 from datetime import date
+from app.user.schemas import Currency
 
 
 class GoalBase(BaseModel):
@@ -13,7 +14,6 @@ class GoalCreateForm(GoalBase):
     title: str = Field(..., max_length=20)
     description: str | None = Field(default=None, max_length=255)
     link: HttpUrl | None = Field(default=None, max_length=2048)
-    # img_path: str | None =  Field(default='images/placeholder.png', max_length=255)
 
     @field_validator('end_date')
     @classmethod
@@ -23,25 +23,36 @@ class GoalCreateForm(GoalBase):
         return end_date
 
 
-class GoalResponse(GoalBase):
+class GoalBaseResponse(BaseModel):
+    id: int
     title: str
     description: str | None
     link: str | None
     img_path: str
+    start_date: date | None
+    end_date: date | None
+    goal_amount: Decimal
+
+
+class GoalResponse(GoalBaseResponse):
+    current_amount: Decimal # накопленно, отображение в currency
+    currency: str           # валюта в которой видет пользователь
+
+
+class GoalCreateUpdateResponse(GoalBaseResponse):
+    target_currency: Currency
+    status: str
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class GoalWithRaisedResponse(GoalResponse):
-    raised: Decimal | None = None
 
 
 class GoalUpdate(GoalBase):
     title: str | None = None
     description: str | None = None
     link: str | None = None
-    img_path: str | None = None
     goal_amount: Decimal | None = None
+    start_date: date | None = None
+    end_date: date | None = None
 
     @model_validator(mode="before")
     @classmethod

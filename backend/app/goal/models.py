@@ -1,6 +1,6 @@
 from app.core.base import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import Integer, Identity, String, Date, Numeric, ForeignKey, CheckConstraint, CHAR
+from sqlalchemy import Integer, Identity, String, Date, Numeric, ForeignKey, CheckConstraint, CHAR, func
 from datetime import date
 from decimal import Decimal
 from app.user.schemas import Currency
@@ -20,7 +20,7 @@ class Goal(Base):
     img_path: Mapped[str | None] = mapped_column(String(255), default="./backend/images/placeholder.png")
     goal_amount: Mapped[Decimal] = mapped_column(Numeric(11, 2))
     target_currency: Mapped[Currency] = mapped_column(CHAR(3), default=Currency.USD)
-    start_date: Mapped[date | None] = mapped_column(Date)
+    start_date: Mapped[date | None] = mapped_column(Date, server_default=func.current_date())
     end_date: Mapped[date | None] = mapped_column(Date)
     status: Mapped[str] = mapped_column(String(20), default="Active")
 
