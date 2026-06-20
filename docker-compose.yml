@@ -1,0 +1,44 @@
+services:
+  # 1. База данных PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: project_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres           # Имя пользователя БД
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: dream_stash       # Название базы данных
+    ports:
+      - "5432:5432" # Пробрасываем порт, чтобы можно было зайти через DBeaver/PgAdmin
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Сохраняем данные при перезапуске
+
+  # 2. Бэкенд на FastAPI
+  backend:
+    build: ./backend # Указываем папку, где лежит Dockerfile бэкенда
+    container_name: project_backend
+    volumes:
+      - ./backend:/app # Синхронизируем файлы: изменения в коде сразу отразятся в контейнере
+    ports:
+      - "8000:8000"
+    environment:
+      # Передаем строку подключения к БД (обрати внимание, хост теперь 'db', а не localhost)
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/dream_stash
+    depends_on:
+      - db # Бэкенд запустится только после базы данных
+
+  # 3. Фронтенд на Vue
+  frontend:
+    build: ./frontend # Указываем папку, где лежит Dockerfile фронтенда
+    container_name: project_frontend
+    volumes:
+      - ./frontend:/app # Синхронизируем файлы
+      - /app/node_modules # Предотвращаем перезапись node_modules локальной пустой папкой
+    ports:
+      - "5173:5173" # Стандартный порт Vite (или 8080 для Vue CLI)
+    depends_on:
+      - backend
+
+# Объявляем место для постоянного хранения данных БД
+volumes:
+  postgres_data:

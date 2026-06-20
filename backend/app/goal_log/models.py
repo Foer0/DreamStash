@@ -1,6 +1,6 @@
 from app.core.base import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, Identity, Numeric, CHAR, Date, Text, ForeignKey, CheckConstraint, text
+from sqlalchemy import Integer, Identity, Numeric, CHAR, Date, Text, ForeignKey, CheckConstraint, text, String
 from decimal import Decimal
 from datetime import date
 from app.user.schemas import Currency
@@ -9,7 +9,7 @@ from app.user.schemas import Currency
 class GoalLog(Base):
     __tablename__ = 'goal_logs'
     __table_args__ = (
-        CheckConstraint("type IN ('deposite', 'withdraw')"),
+        CheckConstraint("type IN ('deposit', 'withdraw')"),
         CheckConstraint("created_at <= CURRENT_DATE"),
     )
 
@@ -18,7 +18,7 @@ class GoalLog(Base):
     goal_id: Mapped[int] = mapped_column(Integer, ForeignKey('goals.id', ondelete='CASCADE'))
     amount: Mapped[Decimal] = mapped_column(Numeric(11, 2))
     currency: Mapped[Currency] = mapped_column(CHAR(3))
-    operation_type: Mapped[str] = mapped_column(CHAR(8), name="type")
+    operation_type: Mapped[str] = mapped_column(String(8), name="type")
     created_at: Mapped[date] = mapped_column(Date, server_default=text('CURRENT_DATE'))
     note: Mapped[str | None] = mapped_column(Text)
 

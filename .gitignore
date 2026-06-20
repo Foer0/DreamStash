@@ -1,0 +1,23 @@
+# Корень
+.venv
+.env
+
+# Бекенд
+backend/.env
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+backend/alembic.ini.bak
+backend/images/*
+!backend/images/placeholder.png
+
+# Фронтенд
+frontend/.env
+frontend/.vscode/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+
+.DS_Store
+Thumbs.db

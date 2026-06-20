@@ -6,7 +6,7 @@ from app.user.schemas import Currency
 
 
 class OperationType(str, Enum):
-    DEPOSIT = "deposite"
+    DEPOSIT = "deposit"
     WITHDRAW = "withdraw"
 
 
@@ -28,8 +28,8 @@ class GoalTransactionResponse(BaseModel):
     goal_id: int
     amount: Decimal
     currency: Currency
-    tx_type: OperationType = Field(alias="type")
+    operation_type: OperationType = Field(alias="type")
     created_at: date
     note: str | None
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)

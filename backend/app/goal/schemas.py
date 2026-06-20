@@ -1,4 +1,6 @@
 from pydantic import BaseModel, Field, field_validator, HttpUrl, ConfigDict, model_validator
+from fastapi import Form
+from typing import Optional
 from decimal import Decimal
 from datetime import date
 from app.user.schemas import Currency
@@ -6,8 +8,8 @@ from app.user.schemas import Currency
 
 class GoalBase(BaseModel):
     goal_amount: Decimal
-    start_date: date | None
-    end_date: date | None
+    start_date: date | None = None
+    end_date: date | None = None
 
 
 class GoalCreateForm(GoalBase):
@@ -22,6 +24,25 @@ class GoalCreateForm(GoalBase):
             raise ValueError('Конечная дата не может быть в прошлом')
         return end_date
 
+    @classmethod
+    def as_form(
+            cls,
+            title: str = Form(...),
+            goal_amount: Decimal = Form(...),
+            description: Optional[str] = Form(None),
+            link: Optional[str] = Form(None),
+            start_date: Optional[str] = Form(None),
+            end_date: Optional[str] = Form(None),
+    ):
+        return cls(
+            title=title,
+            goal_amount=goal_amount,
+            description=description,
+            link=link,
+            start_date=start_date,
+            end_date=end_date,
+        )
+
 
 class GoalBaseResponse(BaseModel):
     id: int
@@ -35,8 +56,8 @@ class GoalBaseResponse(BaseModel):
 
 
 class GoalResponse(GoalBaseResponse):
-    current_amount: Decimal # накопленно, отображение в currency
-    currency: str           # валюта в которой видет пользователь
+    current_amount: Decimal
+    currency: str
 
 
 class GoalCreateUpdateResponse(GoalBaseResponse):
@@ -51,8 +72,6 @@ class GoalUpdate(GoalBase):
     description: str | None = None
     link: str | None = None
     goal_amount: Decimal | None = None
-    start_date: date | None = None
-    end_date: date | None = None
 
     @model_validator(mode="before")
     @classmethod
